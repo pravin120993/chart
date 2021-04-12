@@ -11,16 +11,6 @@ var server = {
   port: 4040
 };
 
-// setup database
-db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'MMmm@123',
-  database: 'chart',
-  insecureAuth : true,
-  multipleStatements: true
-})
-
 // use the modules
 app.use(cors())
 app.use(bodyParser.json());

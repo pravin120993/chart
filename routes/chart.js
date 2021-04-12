@@ -1,19 +1,15 @@
 const express = require('express'),
-  router = express.Router();
+  router = express.Router(),
+  dbConnect = require('../dbConnect');
 
 // get user lists
-router.get('/', function(req, res) {
-  let sql = 'SELECT PLC__INV_TOTAL_ENERGY, LocalCol FROM test order by LocalCol ASC; select PLC__INV_TODAY_ENERGY, PLC__INV_EFFICIENCY, PLC__INV_DC_POWER, PLC__INV_DC_CURRENT, PLC__INV_AC_POWER_PERCENT, PLC__INV_AC_POWER FROM test order by LocalCol DESC limit 1';
-  db.query(sql, function(err, data, fields) {
-    if (err) throw err;
-    res.json({
-      status: 200,
-      result: {
-        chartData: data[0],
-        cardData: data[1][0],
-      },
-    })
-  })
-});
+router.get('/', function (req, res) {
+  console.log("comming....")
+  dbConnect.request().query(`SELECT PLC__INV_TOTAL_ENERGY, LocalCol FROM dbo.REPORT where LocalCol between '2019-02-28 08:01:00.000' and '2019-02-28 18:01:00.000'`).then(result => {
+    console.dir(result)
+  }).catch(err => {
+    // ... error checks
+  });
+})
 
 module.exports = router;
