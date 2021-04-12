@@ -1,0 +1,67 @@
+import React, { useState } from "react";
+import ReactDOM from "react-dom";
+import "antd/dist/antd.css";
+import "./index.css";
+import { Tree } from "antd";
+const initTreeData = [
+  {
+    title: "l1",
+    key: "0"
+  }
+]; // It's just a simple demo. You can use tree map to optimize update perf.
+
+function getDataFromAPI() {
+  return [
+    {
+      title: "l2-a",
+      key: `${Math.random()}-0`,
+      isLeaf: Math.random() > 0.5
+    },
+    {
+      title: "l2-b",
+      key: `${Math.random()}-1`,
+      isLeaf: Math.random() > 0.5
+    }
+  ];
+}
+
+function updateTreeData(list, key, children) {
+  return list.map(node => {
+    if (node.key === key) {
+      return { ...node, children };
+    }
+
+    if (node.children) {
+      return {
+        ...node,
+        children: updateTreeData(node.children, key, children)
+      };
+    }
+
+    return node;
+  });
+}
+
+const Demo = () => {
+  const [treeData, setTreeData] = useState(initTreeData);
+
+  function onLoadData({ key, children }) {
+    return fetch("https://reqres.in/api/users")
+      .then(data => data.json())
+      .then(data => {
+        console.log(data);
+        let asdas = [];
+        data.data.forEach(value => {
+          asdas.push({
+            title: value.first_name,
+            key: value.id
+          });
+        });
+        setTreeData(origin => updateTreeData(origin, key, asdas));
+      });
+  }
+
+  return <Tree loadData={onLoadData} treeData={treeData} />;
+};
+
+ReactDOM.render(<Demo />, document.getElementById("container"));

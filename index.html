@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"
+      integrity="sha512-d9xgZrVZpmmQlfonhQUvTR7lMPtO7NkZMkA0ABN3PHCbKA5nqylQ/yWlFAyY6hYgdF1Qh6nYiuADWwKB4C2WSw=="
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      .chart {
+        height: 70vh !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="p-3">
+      <div class="row">
+        <div class="col-sm">
+          <div class="card text-center">
+            <div class="card-body">
+              <h1 class="card-title" id="PLC__INV_AC_POWER">0</h1>
+              <div>PLC__INV_AC_POWER</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm">
+          <div class="card text-center">
+            <div class="card-body">
+              <h1 class="card-title" id="PLC__INV_AC_POWER_PERCENT">0</h1>
+              <div>PLC__INV_AC_POWER_PERCENT</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm">
+          <div class="card text-center">
+            <div class="card-body">
+              <h1 class="card-title" id="PLC__INV_DC_CURRENT">0</h1>
+              <div>PLC__INV_DC_CURRENT</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm">
+          <div class="card text-center">
+            <div class="card-body">
+              <h1 class="card-title" id="PLC__INV_DC_POWER">0</h1>
+              <div>PLC__INV_DC_POWER</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm">
+          <div class="card text-center">
+            <div class="card-body">
+              <h1 class="card-title" id="PLC__INV_EFFICIENCY">0</h1>
+              <div>PLC__INV_EFFICIENCY</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm">
+          <div class="card text-center">
+            <div class="card-body">
+              <h1 class="card-title" id="PLC__INV_TODAY_ENERGY">0</h1>
+              <div>PLC__INV_TODAY_ENERGY</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--* Card init *-->
+    <div class="card">
+      <!-- Card header -->
+      <div class="card-header">
+        <!-- Title -->
+        <h5 class="h3 mb-0">Line chart</h5>
+      </div>
+      <!-- Card body -->
+      <div class="card-body">
+        <div class="chart">
+          <!-- Chart wrapper -->
+          <canvas id="myChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <script>
+      function updateDom(id, value) {
+        document.getElementById(id).innerHTML = value
+      }
+      var ctx = document.getElementById("myChart");
+      fetch("http://localhost:4040/chart")
+        .then((response) => response.json())
+        .then(({result: {chartData, cardData}}) => {
+          console.log(cardData);
+          Object.keys(cardData).forEach(function(key) {
+            updateDom(key, cardData[key]);
+          });
+          var myLineChart = new Chart(ctx, {
+            type: "line",
+            data: {
+              labels: chartData.map((value) => new Date(value.LocalCol).toLocaleString()),
+              datasets: [
+                {
+                  label: "PLC__INV_TOTAL_ENERGY",
+                  data: chartData.map((value) => value.PLC__INV_TOTAL_ENERGY),
+                  borderColor: "#3e95cd",
+                  fill: false
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false
+            },
+          });
+        });
+    </script>
+  </body>
+</html>
