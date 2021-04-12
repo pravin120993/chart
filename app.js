@@ -27,7 +27,7 @@ app.use(bodyParser.json());
 app.use('/chart', chartRouter);
 
 app.get('/', (req, res) => {
-  res.json({'message': 'ok'});
+  res.sendFile(__dirname + '/index.html');
 })
 
 // starting the server
